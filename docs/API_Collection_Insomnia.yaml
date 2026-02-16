@@ -1,0 +1,177 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Card Platform
+meta:
+  id: wrk_48efae8185b74233aa49e65e8f6b9810
+  created: 1771072946876
+  modified: 1771153421043
+  description: ""
+collection:
+  - url: http://localhost:8080/login
+    name: Authentication
+    meta:
+      id: req_aa088faf82d94ec7b970be390231d781
+      created: 1771072946896
+      modified: 1771256787008
+      isPrivate: false
+      description: ""
+      sortKey: -1771072946896
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"username": "John",
+        	"password": "123"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/12.3.1
+        description: ""
+        disabled: false
+    scripts:
+      afterResponse: |-
+        const jsonBody = insomnia.response.json();
+        insomnia.environment.set("accessToken", jsonBody.accessToken);
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8081/card
+    name: Add Card
+    meta:
+      id: req_5997e57f403c41a6a115a1d45f232652
+      created: 1771073672498
+      modified: 1771260691063
+      isPrivate: false
+      description: ""
+      sortKey: -1771073672498
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"cardNumber": "4456897999999942"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/12.3.1
+        description: ""
+        disabled: false
+    authentication:
+      type: bearer
+      token: "{{accessToken}}"
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8081/card
+    name: Get Card Id
+    meta:
+      id: req_bd8d39dcfcac4fd1885250fce0beeec4
+      created: 1771079800737
+      modified: 1771160780735
+      isPrivate: false
+      description: ""
+      sortKey: -1771073309697
+    method: GET
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"cardNumber": "4456897999999999"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/12.3.1
+        description: ""
+        disabled: false
+    authentication:
+      type: bearer
+      token: "{{accessToken}}"
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8081/cards
+    name: Add Cards From Batch File
+    meta:
+      id: req_93392df9c07045dd9ad5832aa0bfcd04
+      created: 1771095328726
+      modified: 1771260670657
+      isPrivate: false
+      description: ""
+      sortKey: -1771073491097.5
+    method: POST
+    body:
+      mimeType: multipart/form-data
+      params:
+        - name: file
+          value: ""
+          description: ""
+          disabled: false
+          fileName: /Users/douglasavila/Library/CloudStorage/Dropbox/1 -
+            Projects/Hyperativa Java
+            Challenge/card-platform/samples/CARD-PROCESSING-BATCH.txt
+          type: file
+    headers:
+      - name: Content-Type
+        value: multipart/form-data
+      - name: User-Agent
+        value: insomnia/12.3.1
+        description: ""
+        disabled: false
+    authentication:
+      type: bearer
+      disabled: false
+      token: "{{accessToken}}"
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_fa2501d6307d11cd1cf02d8e5ec5333354ec1bc0
+    created: 1771072946878
+    modified: 1771260459279
+  cookies:
+    - id: 90dfa68b-3b5a-45f5-bc5a-b2a5b8df7af2
+      key: JSESSIONID
+      value: 4FDB33577F35D50B4FF0CD32CAD7A2DD
+      domain: localhost
+      path: /
+      secure: false
+      httpOnly: true
+      hostOnly: true
+environments:
+  name: Card Platform
+  meta:
+    id: env_fa2501d6307d11cd1cf02d8e5ec5333354ec1bc0
+    created: 1771072946877
+    modified: 1771260459281
+    isPrivate: false
+  data:
+    accessToken: eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJjYXJkLXBsYXRmb3JtIiwic3ViIjoiZjI2NGJlNzUtOWI1Ny00NDg0LWI5MTYtMmJlNDYyN2FlNmRhIiwiZXhwIjoxNzcxMjYwNzU5LCJpYXQiOjE3NzEyNjA0NTl9.KiMmou0wYiUxa19ScQ_2zdDuErgq8cLmDpNNQwdUi5eAQPPcGslQ3LxggB8xr_o_tOOKUc4t5id2EYKbM6Iszumw0WA0A3ct3C0gq5oHMDRNeBgXuZGwHbWNma3Ip_xpBrFRNT0o5xtIbUlFyDEewTwtoYV-KW3ccTzEl3CK-qSp6KJN9kMCtbgLTLXz1dh9TC-CUmyG787AysLbWXW-x2i5AqJ4K3TNoGpR2pAF2NL2DrHB-YaTmW29_fx6a59sYgsifAXq4P9XLjxJenvGQhvzZYVhoRn3ON02BUxf2c18AFPpOs_AXPVIvVf7S6EKc365wkXeNWlQ8ywdPNmymA

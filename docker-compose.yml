@@ -1,0 +1,103 @@
+services:
+    auth-db:
+        image: mysql:9.6.0
+        ports:
+            - "3306:3306"
+        expose:
+            - "3306"
+        environment:
+            - MYSQL_USER=admin
+            - MYSQL_PASSWORD=123
+            - MYSQL_DATABASE=auth_db
+            - MYSQL_ROOT_PASSWORD=toor
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpass"]
+            interval: 5s
+            timeout: 3s
+            retries: 20
+    card-db:
+        image: mysql:9.6.0
+        ports:
+            - "3307:3306"
+        expose:
+            - "3306"
+        environment:
+            - MYSQL_USER=admin
+            - MYSQL_PASSWORD=123
+            - MYSQL_DATABASE=card_db
+            - MYSQL_ROOT_PASSWORD=toor
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpass"]
+            interval: 5s
+            timeout: 3s
+            retries: 20
+
+    keygen:
+        image: alpine:3.20
+        command: >
+            sh -lc '
+                apk add --no-cache openssl &&
+                mkdir -p /keys &&
+                if [ ! -f /keys/app.key ] || [ ! -f /keys/app.pub ]; then
+                    echo "Generating RSA keys..." &&
+                    # PKCS#8 private key
+                    openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 \
+                        | openssl pkcs8 -topk8 -nocrypt -out /keys/app.key &&
+                    # public key
+                    openssl pkey -in /keys/app.key -pubout -out /keys/app.pub &&
+                    chmod 600 /keys/app.key &&
+                    chmod 644 /keys/app.pub
+                else
+                    echo "Keys already exist. Skipping."
+                fi
+            '
+        volumes:
+        - jwt-keys:/keys
+
+
+    auth-service:
+        image: auth-app-java-ms:latest
+        build: auth-service/
+        ports:
+            - "8080:8080"
+        depends_on:
+            auth-db: 
+                condition: service_healthy
+            keygen:
+                condition: service_completed_successfully
+        volumes:
+            - jwt-keys:/run/keys:ro
+        environment:
+            SPRING_PROFILES_ACTIVE: docker
+            SERVER_PORT: "8080"
+            SPRING_DATASOURCE_URL: jdbc:mysql://auth-db:3306/auth_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+            SPRING_DATASOURCE_USERNAME: admin
+            SPRING_DATASOURCE_PASSWORD: 123
+            SPRING_JPA_HIBERNATE_DDL_AUTO: update
+            JWT_PRIVATE_KEY_PATH: "file:/run/keys/app.pub"
+            JWT_PUBLIC_KEY_PATH: "file:/run/keys/app.key"
+
+
+    card-service:
+        image: card-app-java-ms:latest
+        build: card-service/
+        ports:
+            - "8081:8081"
+        depends_on:
+            card-db:
+                condition: service_healthy
+            keygen:
+                condition: service_completed_successfully
+        volumes:
+            - jwt-keys:/run/keys:ro
+        environment:
+            SPRING_PROFILES_ACTIVE: docker
+            SERVER_PORT: "8081"
+            SPRING_DATASOURCE_URL: jdbc:mysql://card-db:3306/card_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+            SPRING_DATASOURCE_USERNAME: admin
+            SPRING_DATASOURCE_PASSWORD: 123
+            SPRING_JPA_HIBERNATE_DDL_AUTO: update
+            JWT_PUBLIC_KEY_PATH: "file:/run/keys/app.key"
+
+volumes:
+    jwt-keys:
