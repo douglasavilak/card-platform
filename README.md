@@ -44,7 +44,7 @@ Request body:
 }
 ```
 The response will contain a valid JWT token for the Card Platform.
-If you use the Authentication request from the Insomnia collection under **/docs-api, the token will automatically populate an Insomnia environment variable, and you will not need to manually copy and paste it into subsequent requests. Otherwise, you must copy the token and include it as a Bearer token in the Authorization header for each request.
+If you use the Authentication request from the Insomnia collection under **/docs/api, the token will automatically populate an Insomnia environment variable, and you will not need to manually copy and paste it into subsequent requests. Otherwise, you must copy the token and include it as a Bearer token in the Authorization header for each request.
 Each token is valid for 300 seconds (5 minutes). After this period, you must generate a new token. A token refresh mechanism has not been implemented in order to reduce the project scope and development time.
 
 
